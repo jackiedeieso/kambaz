@@ -317,7 +317,7 @@ export default function Lab1() {
 
             <h4>Github Repo</h4>
             Please
-            <a href="https://www.lipsum.com" id="wd-lipsum">click here</a>
+            <a href="https://github.com/jackiedeieso/kambaz/tree/main" id="wd-lipsum">click here</a>
             to my Github repo<br/>
         </div>
 
