@@ -5,9 +5,7 @@ export default function Assignments() {
   return (
     <div className="container-fluid p-4 bg-white" id="wd-assignments">
       
-      {/* Top Section: Search Bar & Action Buttons */}
       <Row className="mb-3 align-items-center">
-        {/* Search Bar on the Left */}
         <Col md={6}>
           <InputGroup>
             <InputGroup.Text><FaSearch /></InputGroup.Text>
@@ -15,7 +13,6 @@ export default function Assignments() {
           </InputGroup>
         </Col>
 
-        {/* Buttons on the Right */}
         <Col md={6} className="text-end">
           <Button variant="light" className="border me-2">
             <FaPlus className="me-1" /> Group
@@ -26,7 +23,6 @@ export default function Assignments() {
         </Col>
       </Row>
 
-      {/* Assignments Header (Grey Background) */}
       <Row className="border-bottom pb-2 mb-3 align-items-center bg-light p-2">
         <Col className="fs-5 fw-bold">ASSIGNMENTS</Col>
         <Col className="text-end">
@@ -34,7 +30,6 @@ export default function Assignments() {
         </Col>
       </Row>
 
-      {/* Assignment List */}
       <ListGroup>
         {[
           { id: 1, title: "A1 - ENV + HTML", available: "May 6 at 12:00am", due: "May 13 at 11:59pm", points: 100 },
@@ -59,10 +54,8 @@ export default function Assignments() {
               </div>
             </div>
 
-            {/* Green Checkmark */}
             <FaCheckCircle className="text-success fs-5 me-3" />
 
-            {/* Three Dots (⋮) on the Right */}
             <FaEllipsisV className="text-muted fs-5" />
           </ListGroup.Item>
         ))}

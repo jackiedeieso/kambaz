@@ -13,7 +13,6 @@ export default function ModulesControls() {
         View Progress
       </Button>
 
-      {/* Dark Grey Publish All Dropdown */}
       <Dropdown>
         <Dropdown.Toggle variant="dark" size="lg" id="wd-publish-all-btn">
           <GreenCheckmark /> Publish All
