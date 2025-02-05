@@ -3,7 +3,7 @@ import Lab2 from "./Lab 2";
 import Lab3 from "./Lab 3";
 import TOC from "./TOC";
 
-import { Route, Routes, Navigate } from "react-router";
+import { Route, Routes } from "react-router";
 
 export default function Labs() {
   return (
