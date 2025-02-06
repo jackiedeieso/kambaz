@@ -14,6 +14,8 @@ export default function Labs() {
 
         <h1>Jacqueline Deieso</h1>
 
+        <h2>SEC 202530</h2>
+
         <a href="https://github.com/jackiedeieso/kambaz" id="wd-github" target="_blank">My Repo</a><br/>
         <a href="https://jackie-deieso-kambaz.netlify.app/#/Kambaz/Account/Signin" id="wd-netlify" target="_blank">My Project Deployed</a><br/>
       </div>
