@@ -34,6 +34,10 @@ import PathParameters from "./PathParameters";
 
 export default function Lab3() {
   console.log('Hello World!');
+  const sum = add(5, 3);
+  const difference = subtract(10, 4);
+  const product = multiply(6, 7);
+  const quotient = divide(20, 5);
     return (
       <div id="wd-lab3">
         <h2>Lab 3</h2>
@@ -62,6 +66,14 @@ export default function Lab3() {
         <Spreading />
         <Destructing />
         <FunctionDestructing />
+
+        <div>
+          <h3>Math</h3>
+          <p>Addition (5 + 8): {sum}</p>
+          <p>Subtraction (10 - 2): {difference}</p>
+          <p>Multiplication (6 * 5): {product}</p>
+          <p>Division (21 / 3): {quotient}</p>
+        </div>
 
         <DestructingImports />
         <Classes />
