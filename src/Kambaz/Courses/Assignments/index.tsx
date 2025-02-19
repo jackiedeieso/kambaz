@@ -5,7 +5,7 @@ import * as db from "../../Database";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const assignments = db.assignments.filter((assignment: any) => assignment.course === cid); // Filter assignments for the course
+  const assignments = db.assignments.filter((assignment: any) => assignment.course === cid); 
 
   return (
     <div className="container-fluid p-4 bg-white" id="wd-assignments">

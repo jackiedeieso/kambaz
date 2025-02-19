@@ -9,8 +9,8 @@ import { BsPlus } from "react-icons/bs";
 import { IoEllipsisVertical } from "react-icons/io5";
 
 export default function Modules() {
-  const { cid } = useParams(); // Get course ID from URL
-  const modules = db.modules.filter((module: any) => module.course === cid); // Filter modules for this course
+  const { cid } = useParams(); 
+  const modules = db.modules.filter((module: any) => module.course === cid); 
 
   return (
     <div id="wd-modules">
@@ -28,10 +28,8 @@ export default function Modules() {
               <ModuleControlButtons />
             </div>
 
-            {/* Display Module Description */}
             <div className="p-3 text-secondary">{module.description}</div>
 
-            {/* Check if lessons exist before mapping */}
             {module.lessons && module.lessons.length > 0 && (
               <ListGroup className="wd-lessons">
                 {module.lessons.map((lesson: any) => (

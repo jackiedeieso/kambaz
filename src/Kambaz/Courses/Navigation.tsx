@@ -4,7 +4,7 @@ import * as db from "../Database";
 import "./CourseNavigation.css";
 
 export default function CourseNavigation() {
-  const location = useLocation(); // Get the current route
+  const location = useLocation(); 
   const links = ["Home", "Modules", "Piazza", "Zoom", "Assignments", "Quizzes", "Grades", "People"];
 
   const courseId = location.pathname.split("/")[3]; 
