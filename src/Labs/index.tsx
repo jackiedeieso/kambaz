@@ -3,7 +3,7 @@ import Lab2 from "./Lab 2";
 import Lab3 from "./Lab 3";
 import TOC from "./TOC";
 
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 export default function Labs() {
   return (
@@ -22,6 +22,7 @@ export default function Labs() {
       
       <TOC />
       <Routes>
+        <Route index element={<Navigate to="Lab1" />} />
         <Route path="Lab1" element={<Lab1 />} />
         <Route path="Lab2/*" element={<Lab2 />} />
         <Route path="Lab3" element={<Lab3 />} />

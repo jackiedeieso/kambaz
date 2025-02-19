@@ -1,0 +1,38 @@
+/* Container Styling */
+#wd-courses-navigation {
+    width: 200px;
+  }
+  
+  /* Course Section */
+  .wd-course-nav-section {
+    background-color: transparent;
+    border: none;
+    padding-bottom: 10px;
+  }
+  
+  .course-title {
+    color: black;
+    font-weight: bold;
+    padding: 10px 0;
+  }
+  
+  /* Course Links */
+  .wd-course-sub-nav {
+    border: none;
+    padding: 5px 0;
+  }
+  
+  .wd-course-sub-nav a {
+    color: red !important;
+    text-decoration: none;
+    display: block;
+    padding: 5px;
+  }
+  
+  /* Active Page Styling */
+  .wd-course-sub-nav.active-link a {
+    color: black !important;
+    font-weight: bold;
+    border-left: 3px solid black;
+    padding-left: 5px;
+  }
