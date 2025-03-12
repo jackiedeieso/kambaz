@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 import Profile from "./Profile";
 import Signup from "./Signup";
-import Signin from "./Singin";
+import Signin from "./Signin";
 import AccountNavigation from "./Navigation";
 
 export default function Account() {
