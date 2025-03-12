@@ -1,104 +1,99 @@
-import { Form, Row, Col, Container } from "react-bootstrap";
-import { useParams, Link } from "react-router-dom";
-import * as db from "../../Database"; 
+import { Form, Row, Col, Container, Button } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addAssignment, updateAssignment } from "./reducer";
+import { v4 as uuidv4 } from "uuid";
 
 export default function AssignmentEditor() {
-  const { cid, aid } = useParams(); 
-  const assignment = db.assignments.find((a: any) => a._id === aid); 
+  const { cid, aid } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const existingAssignment = assignments.find((a: any) => a._id === aid);
 
-  if (!assignment) {
-    return (
-      <Container fluid className="p-4 text-center">
-        <h3 className="text-danger">Assignment not found.</h3>
-        <Link to={`/Kambaz/Courses/${cid}/Assignments`} className="btn btn-secondary mt-3">
-          Back to Assignments
-        </Link>
-      </Container>
-    );
-  }
+  const [assignment, setAssignment] = useState<any>(
+    existingAssignment || {
+      _id: uuidv4(),
+      name: "",
+      description: "",
+      points: "",
+      dueDate: "",
+      availableFrom: "",
+      availableUntil: "",
+      course: cid,
+    }
+  );
+
+  const handleSave = () => {
+    if (!existingAssignment) {
+      dispatch(addAssignment(assignment));
+    } else {
+      dispatch(updateAssignment(assignment));
+    }
+    navigate(`/Kambaz/Courses/${cid}/Assignments`);
+  };
 
   return (
     <Container fluid className="p-4">
       <Form className="bg-white p-4 shadow-sm">
-
         <Form.Group controlId="wd-name" className="mb-3">
           <Form.Label className="fw-bold">Assignment Name</Form.Label>
-          <Form.Control type="text" defaultValue={assignment.title} />
+          <Form.Control
+            type="text"
+            value={assignment.name}
+            onChange={(e) => setAssignment({ ...assignment, name: e.target.value })}
+          />
         </Form.Group>
 
         <Form.Group controlId="wd-description" className="mb-3">
           <Form.Label className="fw-bold">Description</Form.Label>
-          <Form.Control as="textarea" rows={5} defaultValue={assignment.description} />
+          <Form.Control
+            as="textarea"
+            rows={5}
+            value={assignment.description}
+            onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}
+          />
         </Form.Group>
 
         <Form.Group controlId="wd-points" className="mb-3">
           <Form.Label className="fw-bold">Points</Form.Label>
-          <Form.Control type="number" defaultValue={assignment.points} />
-        </Form.Group>
-
-        <Form.Group controlId="wd-group" className="mb-3">
-          <Form.Label className="fw-bold">Assignment Group</Form.Label>
-          <Form.Select>
-            <option>ASSIGNMENTS</option>
-            <option>Group 1</option>
-            <option>Group 2</option>
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group controlId="wd-display-grade-as" className="mb-3">
-          <Form.Label className="fw-bold">Display Grade as</Form.Label>
-          <Form.Select>
-            <option>Percentage</option>
-            <option>Decimal</option>
-            <option>Points</option>
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group controlId="wd-submission-type" className="mb-3">
-          <Form.Label className="fw-bold">Submission Type</Form.Label>
-          <Form.Select>
-            <option>Online</option>
-            <option>In Person</option>
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group controlId="wd-online-entry" className="mb-3">
-          <Form.Label className="fw-bold">Online Entry Options</Form.Label>
-          <div>
-            <Form.Check type="checkbox" label="Text Entry" />
-            <Form.Check type="checkbox" label="Website URL" defaultChecked />
-            <Form.Check type="checkbox" label="Media Recordings" />
-            <Form.Check type="checkbox" label="Student Annotation" />
-            <Form.Check type="checkbox" label="File Uploads" />
-          </div>
-        </Form.Group>
-
-        <Form.Group controlId="wd-assign-to" className="mb-3">
-          <Form.Label className="fw-bold">Assign to</Form.Label>
-          <Form.Control as="select" multiple>
-            <option>Everyone</option>
-            <option>Group 1</option>
-            <option>Group 2</option>
-          </Form.Control>
+          <Form.Control
+            type="number"
+            value={assignment.points}
+            onChange={(e) => setAssignment({ ...assignment, points: e.target.value })}
+          />
         </Form.Group>
 
         <Row>
           <Col md={4}>
             <Form.Group controlId="wd-due-date" className="mb-3">
-              <Form.Label className="fw-bold">Due</Form.Label>
-              <Form.Control type="date" defaultValue={assignment.due} />
+              <Form.Label className="fw-bold">Due Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={assignment.dueDate}
+                onChange={(e) => setAssignment({ ...assignment, dueDate: e.target.value })}
+              />
             </Form.Group>
           </Col>
           <Col md={4}>
             <Form.Group controlId="wd-available-from" className="mb-3">
               <Form.Label className="fw-bold">Available From</Form.Label>
-              <Form.Control type="date" defaultValue={assignment.available} />
+              <Form.Control
+                type="date"
+                value={assignment.availableFrom}
+                onChange={(e) => setAssignment({ ...assignment, availableFrom: e.target.value })}
+              />
             </Form.Group>
           </Col>
           <Col md={4}>
             <Form.Group controlId="wd-available-until" className="mb-3">
               <Form.Label className="fw-bold">Available Until</Form.Label>
-              <Form.Control type="date" defaultValue={assignment.availableUntil || ""} />
+              <Form.Control
+                type="date"
+                value={assignment.availableUntil}
+                onChange={(e) => setAssignment({ ...assignment, availableUntil: e.target.value })}
+              />
             </Form.Group>
           </Col>
         </Row>
@@ -106,12 +101,12 @@ export default function AssignmentEditor() {
         <hr />
 
         <div className="d-flex justify-content-end">
-          <Link to={`/Kambaz/Courses/${cid}/Assignments`} className="btn btn-secondary me-2">
+          <Button variant="secondary" className="me-2" onClick={() => navigate(`/Kambaz/Courses/${cid}/Assignments`)}>
             Cancel
-          </Link>
-          <Link to={`/Kambaz/Courses/${cid}/Assignments`} className="btn btn-danger">
+          </Button>
+          <Button variant="danger" onClick={handleSave}>
             Save
-          </Link>
+          </Button>
         </div>
       </Form>
     </Container>

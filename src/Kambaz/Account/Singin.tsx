@@ -1,7 +1,30 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentUser } from "./reducer";
+import * as db from "../Database";
 import { Form, Button, Container, Card } from "react-bootstrap";
 
 export default function Signin() {
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+
+  const signin = () => {
+    const user = db.users.find(
+      (u: any) => u.username === credentials.username && u.password === credentials.password
+    );
+
+    if (!user) {
+      alert("Invalid username or password");
+      return;
+    }
+
+    dispatch(setCurrentUser(user));
+    navigate("/Kambaz/Dashboard");
+  };
+
   return (
     <Container className="d-flex justify-content-center align-items-center vh-100">
       <Card className="p-4 shadow-lg" style={{ width: "350px" }}>
@@ -10,19 +33,27 @@ export default function Signin() {
           <Form>
             <Form.Group className="mb-3" controlId="username">
               <Form.Label>Username</Form.Label>
-              <Form.Control type="text" placeholder="Enter username" />
+              <Form.Control
+                type="text"
+                placeholder="Enter username"
+                value={credentials.username}
+                onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Enter password" />
+              <Form.Control
+                type="password"
+                placeholder="Enter password"
+                value={credentials.password}
+                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+              />
             </Form.Group>
 
-            <Link to="/Kambaz/Dashboard" className="d-block">
-              <Button variant="danger" className="w-100">
-                Sign In
-              </Button>
-            </Link>
+            <Button variant="danger" className="w-100" onClick={signin}>
+              Sign In
+            </Button>
           </Form>
 
           <div className="text-center mt-3">

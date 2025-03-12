@@ -1,15 +1,32 @@
-import { Row, Col, InputGroup, FormControl, Button, ListGroup } from "react-bootstrap";
-import { FaSearch, FaPlus, FaEllipsisV, FaCheckCircle } from "react-icons/fa";
+import { useState } from "react";
+import { Row, Col, InputGroup, FormControl, Button, ListGroup, Modal } from "react-bootstrap";
+import { FaSearch, FaPlus, FaEllipsisV, FaCheckCircle, FaTrash } from "react-icons/fa";
 import { useParams } from "react-router";
-import * as db from "../../Database"; 
+import { useDispatch, useSelector } from "react-redux";
+import { deleteAssignment } from "./reducer";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const assignments = db.assignments.filter((assignment: any) => assignment.course === cid); 
+  const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
+  const dispatch = useDispatch();
+  
+  const [showModal, setShowModal] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
+
+  const confirmDelete = (assignment: any) => {
+    setSelectedAssignment(assignment);
+    setShowModal(true);
+  };
+
+  const handleDelete = () => {
+    if (selectedAssignment) {
+      dispatch(deleteAssignment(selectedAssignment._id));
+    }
+    setShowModal(false);
+  };
 
   return (
     <div className="container-fluid p-4 bg-white" id="wd-assignments">
-      
       <Row className="mb-3 align-items-center">
         <Col md={6}>
           <InputGroup>
@@ -37,14 +54,9 @@ export default function Assignments() {
 
       <ListGroup>
         {assignments.length > 0 ? (
-          assignments.map((assignment: any) => (
-            <ListGroup.Item
-              key={assignment._id}
-              className="d-flex align-items-center border border-dark border-1 bg-white text-dark position-relative"
-            >
-
+          assignments.filter((a: any) => a.course === cid).map((assignment: any) => (
+            <ListGroup.Item key={assignment._id} className="d-flex align-items-center border border-dark border-1 bg-white text-dark position-relative">
               <div className="position-absolute start-0 top-0 bottom-0 bg-success" style={{ width: "5px" }}></div>
-
 
               <div className="flex-fill ps-3">
                 <a href={`#/Kambaz/Courses/${cid}/Assignments/${assignment._id}`} className="fw-bold text-dark">
@@ -57,6 +69,7 @@ export default function Assignments() {
                 </div>
               </div>
 
+              <FaTrash className="text-danger fs-5 me-3" style={{ cursor: "pointer" }} onClick={() => confirmDelete(assignment)} />
               <FaCheckCircle className="text-success fs-5 me-3" />
               <FaEllipsisV className="text-muted fs-5" />
             </ListGroup.Item>
@@ -65,7 +78,24 @@ export default function Assignments() {
           <ListGroup.Item className="text-center text-muted">No assignments available.</ListGroup.Item>
         )}
       </ListGroup>
-      
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Assignment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete <strong>{selectedAssignment?.title}</strong>?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

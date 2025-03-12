@@ -4,8 +4,7 @@ import { useParams } from "react-router-dom";
 import * as db from "../../Database"; 
 
 export default function PeopleTable() {
-  console.log("PeopleTable.tsx is rendering");
-
+  
   const { cid } = useParams(); 
   const { users, enrollments } = db; 
 
