@@ -1,26 +1,20 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "./reducer";
-import * as db from "../Database";
+import { useDispatch } from "react-redux";
 import { Form, Button, Container, Card } from "react-bootstrap";
+import * as db from "../Database";
 
 export default function Signin() {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
 
   const signin = () => {
     const user = db.users.find(
       (u: any) => u.username === credentials.username && u.password === credentials.password
     );
-
-    if (!user) {
-      alert("Invalid username or password");
-      return;
-    }
-
+    if (!user) return;
     dispatch(setCurrentUser(user));
     navigate("/Kambaz/Dashboard");
   };
