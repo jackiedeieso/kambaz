@@ -23,7 +23,6 @@ export default function Assignments() {
   const [showModal, setShowModal] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
 
-  // ✅ Load assignments from the backend
   useEffect(() => {
     const loadAssignments = async () => {
       try {
