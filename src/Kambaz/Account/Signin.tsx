@@ -1,22 +1,28 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { setCurrentUser } from "./reducer";
 import { useDispatch } from "react-redux";
 import { Form, Button, Container, Card } from "react-bootstrap";
-import * as db from "../Database";
+import { setCurrentUser } from "./reducer";
+import * as client from "./client";
 
 export default function Signin() {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const signin = () => {
-    const user = db.users.find(
-      (u: any) => u.username === credentials.username && u.password === credentials.password
-    );
-    if (!user) return;
-    dispatch(setCurrentUser(user));
-    navigate("/Kambaz/Dashboard");
+  const signin = async () => {
+    try {
+      const user = await client.signin(credentials);
+      if (!user) {
+        alert("Invalid username or password");
+        return;
+      }
+      dispatch(setCurrentUser(user));
+      navigate("/Kambaz/Dashboard");
+    } catch (error) {
+      console.error("Signin failed:", error);
+      alert("Signin failed. Please try again.");
+    }
   };
 
   return (

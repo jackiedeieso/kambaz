@@ -20,7 +20,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    // ✅ Add this line:
+    "types": ["vite/client"]
   },
-  "include": ["src"]
+  // ✅ And include vite-env.d.ts here too:
+  "include": ["src", "vite-env.d.ts"]
 }

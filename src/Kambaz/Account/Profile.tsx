@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentUser } from "./reducer";
+import * as client from "./client";
 import { Form, Button, Container, Card } from "react-bootstrap";
 
 export default function Profile() {
@@ -20,6 +21,17 @@ export default function Profile() {
     navigate("/Kambaz/Account/Signin");
   };
 
+  const updateProfile = async () => {
+    try {
+      const updatedProfile = await client.updateUser(profile);
+      dispatch(setCurrentUser(updatedProfile));
+      alert("Profile updated successfully.");
+    } catch (error) {
+      console.error("Update failed:", error);
+      alert("Failed to update profile.");
+    }
+  };
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -35,7 +47,7 @@ export default function Profile() {
                 <Form.Label>Username</Form.Label>
                 <Form.Control
                   type="text"
-                  value={profile.username}
+                  value={profile.username || ""}
                   onChange={(e) => setProfile({ ...profile, username: e.target.value })}
                 />
               </Form.Group>
@@ -44,7 +56,7 @@ export default function Profile() {
                 <Form.Label>First Name</Form.Label>
                 <Form.Control
                   type="text"
-                  value={profile.firstName}
+                  value={profile.firstName || ""}
                   onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
                 />
               </Form.Group>
@@ -53,7 +65,7 @@ export default function Profile() {
                 <Form.Label>Last Name</Form.Label>
                 <Form.Control
                   type="text"
-                  value={profile.lastName}
+                  value={profile.lastName || ""}
                   onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
                 />
               </Form.Group>
@@ -62,7 +74,7 @@ export default function Profile() {
                 <Form.Label>Date of Birth</Form.Label>
                 <Form.Control
                   type="date"
-                  value={profile.dob}
+                  value={profile.dob || ""}
                   onChange={(e) => setProfile({ ...profile, dob: e.target.value })}
                 />
               </Form.Group>
@@ -71,7 +83,7 @@ export default function Profile() {
                 <Form.Label>Email</Form.Label>
                 <Form.Control
                   type="email"
-                  value={profile.email}
+                  value={profile.email || ""}
                   onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                 />
               </Form.Group>
@@ -79,7 +91,7 @@ export default function Profile() {
               <Form.Group className="mb-3" controlId="role">
                 <Form.Label>Role</Form.Label>
                 <Form.Select
-                  value={profile.role}
+                  value={profile.role || "USER"}
                   onChange={(e) => setProfile({ ...profile, role: e.target.value })}
                 >
                   <option value="USER">User</option>
@@ -97,6 +109,10 @@ export default function Profile() {
                   Sign Out
                 </Button>
               </div>
+
+              <Button className="mt-3 w-100" variant="primary" onClick={updateProfile}>
+                Update Profile
+              </Button>
             </Form>
           )}
         </Card.Body>

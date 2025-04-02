@@ -1,28 +1,82 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { ListGroup, FormControl } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { addModule, editModule, updateModule, deleteModule } from "./reducer";
+import {
+  setModules,
+  addModule,
+  editModule,
+  updateModule,
+  deleteModule,
+} from "./reducer";
 import ModuleControls from "./ModuleControls";
 import ModuleControlButtons from "./ModuleControlButtons";
 import LessonControlButtons from "./LessonControlButtons";
 import { BsGripVertical } from "react-icons/bs";
+import * as coursesClient from "../client";
+import * as modulesClient from "../client"; 
 
 export default function Modules() {
   const { cid } = useParams();
+  const dispatch = useDispatch();
   const [moduleName, setModuleName] = useState("");
   const { modules } = useSelector((state: any) => state.modulesReducer);
-  const dispatch = useDispatch();
+
+  // Load modules from backend
+  const fetchModules = async () => {
+    try {
+      const data = await coursesClient.findModulesForCourse(cid as string);
+      dispatch(setModules(data));
+    } catch (err) {
+      console.error("Failed to fetch modules:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (cid) fetchModules();
+  }, [cid]);
+
+  // Create module
+  const createModuleForCourse = async () => {
+    if (!cid || !moduleName) return;
+    try {
+      const newModule = await coursesClient.createModuleForCourse(cid, {
+        name: moduleName,
+        course: cid,
+      });
+      dispatch(addModule(newModule));
+      setModuleName("");
+    } catch (err) {
+      console.error("Failed to create module:", err);
+    }
+  };
+
+  // Delete module
+  const removeModule = async (moduleId: string) => {
+    try {
+      await modulesClient.deleteModule(moduleId);
+      dispatch(deleteModule(moduleId));
+    } catch (err) {
+      console.error("Failed to delete module:", err);
+    }
+  };
+
+  // Save updated module
+  const saveModule = async (module: any) => {
+    try {
+      await modulesClient.updateModule(module);
+      dispatch(updateModule(module));
+    } catch (err) {
+      console.error("Failed to update module:", err);
+    }
+  };
 
   return (
     <div className="wd-modules">
       <ModuleControls
         moduleName={moduleName}
         setModuleName={setModuleName}
-        addModule={() => {
-          dispatch(addModule({ name: moduleName, course: cid, lessons: [] }));
-          setModuleName("");
-        }}
+        addModule={createModuleForCourse}
       />
 
       <ListGroup id="wd-modules" className="rounded-0">
@@ -37,36 +91,32 @@ export default function Modules() {
                 <div className="d-flex align-items-center">
                   <BsGripVertical className="me-2 fs-4" />
 
-                  {!module.editing && (
+                  {!module.editing ? (
                     <span className="fs-5 fw-bold">{module.name}</span>
-                  )}
-
-                  {module.editing && (
+                  ) : (
                     <FormControl
                       className="w-50 d-inline-block"
+                      value={module.name}
                       onChange={(e) =>
-                        dispatch(
-                          updateModule({ ...module, name: e.target.value })
-                        )
+                        dispatch(updateModule({ ...module, name: e.target.value }))
                       }
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                          dispatch(updateModule({ ...module, editing: false }));
+                          saveModule({ ...module, editing: false });
                         }
                       }}
-                      defaultValue={module.name}
                     />
                   )}
                 </div>
 
                 <ModuleControlButtons
                   moduleId={module._id}
-                  deleteModule={() => dispatch(deleteModule(module._id))}
+                  deleteModule={() => removeModule(module._id)}
                   editModule={() => dispatch(editModule(module._id))}
                 />
               </div>
 
-              {module.lessons && module.lessons.length > 0 && (
+              {module.lessons?.length > 0 && (
                 <ListGroup className="wd-lessons">
                   {module.lessons.map((lesson: any) => (
                     <ListGroup.Item

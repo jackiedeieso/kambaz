@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "./reducer";
 import { v4 as uuidv4 } from "uuid";
+import * as client from "./client"; // ✅ Axios API client
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
@@ -25,11 +26,13 @@ export default function AssignmentEditor() {
     }
   );
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!existingAssignment) {
-      dispatch(addAssignment(assignment));
+      const newAssignment = await client.createAssignment(assignment);
+      dispatch(addAssignment(newAssignment));
     } else {
-      dispatch(updateAssignment(assignment));
+      const updated = await client.updateAssignment(assignment);
+      dispatch(updateAssignment(updated));
     }
     navigate(`/Kambaz/Courses/${cid}/Assignments`);
   };

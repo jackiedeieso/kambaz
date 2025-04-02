@@ -17,28 +17,43 @@ const assignmentsSlice = createSlice({
         description: assignment.description,
         dueDate: assignment.dueDate,
         points: assignment.points,
+        availableFrom: assignment.availableFrom || "",
+        availableUntil: assignment.availableUntil || "",
         course: assignment.course,
       };
       state.assignments = [...state.assignments, newAssignment] as any;
     },
+
     deleteAssignment: (state, { payload: assignmentId }) => {
       state.assignments = state.assignments.filter(
         (a: any) => a._id !== assignmentId
       );
     },
+
     updateAssignment: (state, { payload: assignment }) => {
       state.assignments = state.assignments.map((a: any) =>
         a._id === assignment._id ? assignment : a
       ) as any;
     },
+
     editAssignment: (state, { payload: assignmentId }) => {
       state.assignments = state.assignments.map((a: any) =>
         a._id === assignmentId ? { ...a, editing: true } : a
       ) as any;
     },
+
+    setAssignments: (state, { payload }) => {
+      state.assignments = payload;
+    },
   },
 });
 
-export const { addAssignment, deleteAssignment, updateAssignment, editAssignment } =
-  assignmentsSlice.actions;
+export const {
+  addAssignment,
+  deleteAssignment,
+  updateAssignment,
+  editAssignment,
+  setAssignments
+} = assignmentsSlice.actions;
+
 export default assignmentsSlice.reducer;

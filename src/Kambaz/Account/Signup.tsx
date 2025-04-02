@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "./reducer";
 import { v4 as uuidv4 } from "uuid";
 import { Form, Button, Container, Card } from "react-bootstrap";
+import * as client from "./client";
 
 export default function Signup() {
   const [newUser, setNewUser] = useState({
@@ -14,25 +15,28 @@ export default function Signup() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { users } = useSelector((state: any) => state.accountReducer); // Get users from Redux
+  const { users } = useSelector((state: any) => state.accountReducer); // Optional: used for duplicate check
 
-  const signup = () => {
+  const signup = async () => {
     if (!newUser.username || !newUser.password || !newUser.email) {
       alert("All fields are required!");
       return;
     }
 
-    const userExists = users.find((u: any) => u.username === newUser.username);
+    const userExists = users?.find((u: any) => u.username === newUser.username);
     if (userExists) {
       alert("Username already exists!");
       return;
     }
 
-    const createdUser = { ...newUser, _id: uuidv4() };
-
-    dispatch(setCurrentUser(createdUser)); // Store in Redux
-
-    navigate("/Kambaz/Dashboard");
+    try {
+      const currentUser = await client.signup({ ...newUser, _id: uuidv4() });
+      dispatch(setCurrentUser(currentUser));
+      navigate("/Kambaz/Account/Profile");
+    } catch (error) {
+      console.error("Signup failed:", error);
+      alert("Signup failed. Please try again.");
+    }
   };
 
   return (
