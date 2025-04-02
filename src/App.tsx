@@ -20,4 +20,4 @@ export default function App() {
     
 );}
 
-console.log("✅ VITE_REMOTE_SERVER:", import.meta.env.VITE_REMOTE_SERVER);
+console.log(" VITE_REMOTE_SERVER:", import.meta.env.VITE_REMOTE_SERVER);
