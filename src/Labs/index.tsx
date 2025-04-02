@@ -22,6 +22,15 @@ export default function Labs() {
 
           <a href="https://github.com/jackiedeieso/kambaz" id="wd-github" target="_blank">My Repo</a><br/>
           <a href="https://jackie-deieso-kambaz.netlify.app/#/Kambaz/Account/Signin" id="wd-netlify" target="_blank">My Project Deployed</a><br/>
+          <a
+          href="https://github.com/jackiedeieso/kambaz-node-server-app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-dark mt-3"
+        >
+          View Backend on GitHub
+        </a>
+
         </div>
         
         <TOC />
