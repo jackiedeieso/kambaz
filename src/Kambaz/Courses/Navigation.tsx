@@ -7,7 +7,8 @@ export default function CourseNavigation() {
   const location = useLocation(); 
   const links = ["Home", "Modules", "Piazza", "Zoom", "Assignments", "Quizzes", "Grades", "People"];
 
-  const courseId = location.pathname.split("/")[3]; 
+  // Extract course ID from URL
+  const courseId = location.pathname.split("/")[3];
 
   const course = db.courses.find((c) => c._id === courseId);
 
@@ -29,8 +30,6 @@ export default function CourseNavigation() {
             ))}
           </ListGroup>
         </ListGroup.Item>
-
-        
       </ListGroup>
     </div>
   );

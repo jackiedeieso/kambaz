@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { ListGroup, FormControl } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
+import { ListGroup, FormControl } from "react-bootstrap";
+import { BsGripVertical } from "react-icons/bs";
+
+import ModuleControls from "./ModuleControls";
+import ModuleControlButtons from "./ModuleControlButtons";
+import LessonControlButtons from "./LessonControlButtons";
+
 import {
   setModules,
   addModule,
@@ -9,12 +15,8 @@ import {
   updateModule,
   deleteModule,
 } from "./reducer";
-import ModuleControls from "./ModuleControls";
-import ModuleControlButtons from "./ModuleControlButtons";
-import LessonControlButtons from "./LessonControlButtons";
-import { BsGripVertical } from "react-icons/bs";
-import * as coursesClient from "../client";
-import * as modulesClient from "../client"; 
+
+import * as modulesClient from "../Modules/client"; // ✅ Updated path
 
 export default function Modules() {
   const { cid } = useParams();
@@ -22,53 +24,42 @@ export default function Modules() {
   const [moduleName, setModuleName] = useState("");
   const { modules } = useSelector((state: any) => state.modulesReducer);
 
-  // Load modules from backend
-  const fetchModules = async () => {
+  // Load modules for a course
+  const fetchModulesForCourse = async () => {
     try {
-      const data = await coursesClient.findModulesForCourse(cid as string);
+      const data = await modulesClient.findModulesForCourse(cid as string);
+      console.log("📦 Modules from backend:", data); // <-- Add this
       dispatch(setModules(data));
     } catch (err) {
-      console.error("Failed to fetch modules:", err);
+      console.error("❌ Failed to fetch modules:", err);
     }
   };
 
   useEffect(() => {
-    if (cid) fetchModules();
+    if (cid) fetchModulesForCourse();
   }, [cid]);
 
-  // Create module
-  const createModuleForCourse = async () => {
+  // Create new module
+  const addModuleHandler = async () => {
     if (!cid || !moduleName) return;
-    try {
-      const newModule = await coursesClient.createModuleForCourse(cid, {
-        name: moduleName,
-        course: cid,
-      });
-      dispatch(addModule(newModule));
-      setModuleName("");
-    } catch (err) {
-      console.error("Failed to create module:", err);
-    }
+    const newModule = await modulesClient.createModuleForCourse(cid, {
+      name: moduleName,
+      course: cid,
+    });
+    dispatch(addModule(newModule));
+    setModuleName("");
+  };
+
+  // Update existing module
+  const updateModuleHandler = async (module: any) => {
+    await modulesClient.updateModule(module);
+    dispatch(updateModule(module));
   };
 
   // Delete module
-  const removeModule = async (moduleId: string) => {
-    try {
-      await modulesClient.deleteModule(moduleId);
-      dispatch(deleteModule(moduleId));
-    } catch (err) {
-      console.error("Failed to delete module:", err);
-    }
-  };
-
-  // Save updated module
-  const saveModule = async (module: any) => {
-    try {
-      await modulesClient.updateModule(module);
-      dispatch(updateModule(module));
-    } catch (err) {
-      console.error("Failed to update module:", err);
-    }
+  const deleteModuleHandler = async (moduleId: string) => {
+    await modulesClient.deleteModule(moduleId);
+    dispatch(deleteModule(moduleId));
   };
 
   return (
@@ -76,7 +67,7 @@ export default function Modules() {
       <ModuleControls
         moduleName={moduleName}
         setModuleName={setModuleName}
-        addModule={createModuleForCourse}
+        addModule={addModuleHandler}
       />
 
       <ListGroup id="wd-modules" className="rounded-0">
@@ -90,7 +81,6 @@ export default function Modules() {
               <div className="wd-title p-3 d-flex align-items-center justify-content-between bg-white border">
                 <div className="d-flex align-items-center">
                   <BsGripVertical className="me-2 fs-4" />
-
                   {!module.editing ? (
                     <span className="fs-5 fw-bold">{module.name}</span>
                   ) : (
@@ -102,7 +92,7 @@ export default function Modules() {
                       }
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                          saveModule({ ...module, editing: false });
+                          updateModuleHandler({ ...module, editing: false });
                         }
                       }}
                     />
@@ -111,7 +101,7 @@ export default function Modules() {
 
                 <ModuleControlButtons
                   moduleId={module._id}
-                  deleteModule={() => removeModule(module._id)}
+                  deleteModule={() => deleteModuleHandler(module._id)}
                   editModule={() => dispatch(editModule(module._id))}
                 />
               </div>

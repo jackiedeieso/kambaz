@@ -7,10 +7,10 @@ import Account from "./Account";
 import Dashboard from "./Dashboard";
 import KambazNavigation from "./Navigation";
 import Courses from "./Courses";
-import PeopleTable from "./Courses/People/Table";
 import ProtectedRoute from "./Account/ProtectedRoute";
 import Session from "./Account/Session";
 import Labs from "../Labs";
+import PeopleDetails from "./Courses/People/Details";
 
 import "./styles.css";
 import * as userClient from "./Account/client";
@@ -65,9 +65,7 @@ export default function Kambaz() {
   const updateCourse = async () => {
     try {
       await courseClient.updateCourse(course);
-      setCourses(
-        courses.map((c) => (c._id === course._id ? course : c))
-      );
+      setCourses(courses.map((c) => (c._id === course._id ? course : c)));
     } catch (error) {
       console.error("Error updating course:", error);
     }
@@ -79,10 +77,15 @@ export default function Kambaz() {
         <KambazNavigation />
         <div className="wd-main-content-offset p-3">
           <Routes>
-            <Route path="/" element={<Navigate to="Account" />} />
-            <Route path="/Account/*" element={<Account />} />
+            <Route path="/" element={<Navigate to="/Account" />} />
+
+            {/* Account Routes */}
+            <Route path="Account/*" element={<Account />} />
+            <Route path="Account/Users/:uid" element={<PeopleDetails />} />
+
+            {/* Dashboard */}
             <Route
-              path="/Dashboard"
+              path="Dashboard"
               element={
                 <ProtectedRoute>
                   <Dashboard
@@ -96,18 +99,18 @@ export default function Kambaz() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/Courses/:cid/*"
-              element={
-                <ProtectedRoute>
-                  <Courses courses={courses} />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/Labs" element={<Labs />} />
-            <Route path="/Calendar" element={<h1>Calendar</h1>} />
-            <Route path="/Inbox" element={<h1>Inbox</h1>} />
-            <Route path="/Kambaz/Courses/:cid/People" element={<PeopleTable />} />
+
+            {/* Course Pages */}
+            <Route path="Courses/:cid/*" element={
+              <ProtectedRoute>
+                <Courses courses={courses} />
+              </ProtectedRoute>
+            } />
+
+            {/* Other Pages */}
+            <Route path="Labs" element={<Labs />} />
+            <Route path="Calendar" element={<h1>Calendar</h1>} />
+            <Route path="Inbox" element={<h1>Inbox</h1>} />
           </Routes>
         </div>
       </div>

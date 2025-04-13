@@ -1,38 +1,43 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { modules } from "../../Database";
-import { v4 as uuidv4 } from "uuid";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
-  modules: modules,
+// Define the module shape
+interface ModuleType {
+  _id: string;
+  name: string;
+  course: string;
+  lessons?: any[];
+  editing?: boolean;
+}
+
+interface ModulesState {
+  modules: ModuleType[];
+}
+
+const initialState: ModulesState = {
+  modules: [], 
 };
 
 const modulesSlice = createSlice({
   name: "modules",
   initialState,
   reducers: {
-    setModules: (state, { payload }) => {
-      state.modules = payload;
+    setModules: (state, action: PayloadAction<ModuleType[]>) => {
+      state.modules = action.payload;
     },
-    addModule: (state, { payload: module }) => {
-      const newModule: any = {
-        _id: uuidv4(),
-        lessons: [],
-        name: module.name,
-        course: module.course,
-      };
-      state.modules = [...state.modules, newModule];
+    addModule: (state, action: PayloadAction<ModuleType>) => {
+      state.modules.push(action.payload);
     },
-    deleteModule: (state, { payload: moduleId }) => {
-      state.modules = state.modules.filter((m: any) => m._id !== moduleId);
+    deleteModule: (state, action: PayloadAction<string>) => {
+      state.modules = state.modules.filter((m) => m._id !== action.payload);
     },
-    updateModule: (state, { payload: module }) => {
-      state.modules = state.modules.map((m: any) =>
-        m._id === module._id ? module : m
+    updateModule: (state, action: PayloadAction<ModuleType>) => {
+      state.modules = state.modules.map((m) =>
+        m._id === action.payload._id ? action.payload : m
       );
     },
-    editModule: (state, { payload: moduleId }) => {
-      state.modules = state.modules.map((m: any) =>
-        m._id === moduleId ? { ...m, editing: true } : m
+    editModule: (state, action: PayloadAction<string>) => {
+      state.modules = state.modules.map((m) =>
+        m._id === action.payload ? { ...m, editing: true } : m
       );
     },
   },
