@@ -10,32 +10,20 @@ export default function AccountNavigation() {
 
   return (
     <div id="wd-account-navigation" className="list-group">
-      <Link
-        to="/Kambaz/Account/Signin"
-        className={`list-group-item ${active("Signin")}`}
-      >
-        Signin
+          <Link to="/Kambaz/Account/Signin" className={`list-group-item ${active("Signin")}`}>
+      Signin
+    </Link>
+    <Link to="/Kambaz/Account/Signup" className={`list-group-item ${active("Signup")}`}>
+      Signup
+    </Link>
+    <Link to="/Kambaz/Account/Profile" className={`list-group-item ${active("Profile")}`}>
+      Profile
+    </Link>
+    {currentUser && currentUser.role === "ADMIN" && (
+      <Link to="/Kambaz/Account/Users" className={`list-group-item ${active("Users")}`}>
+        Users
       </Link>
-      <Link
-        to="/Kambaz/Account/Signup"
-        className={`list-group-item ${active("Signup")}`}
-      >
-        Signup
-      </Link>
-      <Link
-        to="/Kambaz/Account/Profile"
-        className={`list-group-item ${active("Profile")}`}
-      >
-        Profile
-      </Link>
-      {currentUser && currentUser.role === "ADMIN" && (
-        <Link
-          to="/Kambaz/Account/Users"
-          className={`list-group-item ${active("Users")}`}
-        >
-          Users
-        </Link>
-      )}
+)}
     </div>
   );
 }

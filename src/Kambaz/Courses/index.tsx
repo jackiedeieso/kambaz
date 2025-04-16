@@ -9,6 +9,7 @@ import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import PeopleDetails from "./People/Details";
 import Users from "../Account/Users";
+import Quizzes from "./Quizzes";
 
 interface CoursesProps {
   courses: any[];
@@ -71,6 +72,7 @@ export default function Courses({ courses }: CoursesProps) {
             <Route path="Assignments/:aid" element={<AssignmentEditor />} />
             <Route path="People" element={<Users />} />
             <Route path="People/:uid" element={<PeopleDetails />} />
+            <Route path="Quizzes/*" element={<Quizzes />} />
           </Routes>
         </div>
       </div>

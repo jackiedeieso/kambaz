@@ -14,10 +14,12 @@ import {
   setAssignments
 } from "./reducer";
 import * as client from "./client";
+import { useNavigate } from "react-router-dom";
 
 export default function Assignments() {
   const { cid } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
 
   const [showModal, setShowModal] = useState(false);
@@ -25,15 +27,18 @@ export default function Assignments() {
 
   useEffect(() => {
     const loadAssignments = async () => {
+      if (!cid) return;
       try {
-        const data = await client.findAssignments();
+        const data = await client.findAssignments(cid);
+        console.log("📦 Loaded assignments:", data);
         dispatch(setAssignments(data));
       } catch (error) {
         console.error("Error fetching assignments:", error);
       }
     };
+
     loadAssignments();
-  }, []);
+  }, [cid]);
 
   const confirmDelete = (assignment: any) => {
     setSelectedAssignment(assignment);
@@ -41,9 +46,12 @@ export default function Assignments() {
   };
 
   const handleDelete = async () => {
-    if (selectedAssignment) {
+    if (!selectedAssignment) return;
+    try {
       await client.deleteAssignment(selectedAssignment._id);
       dispatch(deleteAssignment(selectedAssignment._id));
+    } catch (err) {
+      console.error("❌ Failed to delete assignment:", err);
     }
     setShowModal(false);
   };
@@ -62,7 +70,28 @@ export default function Assignments() {
           <Button variant="light" className="border me-2">
             <FaPlus className="me-1" /> Group
           </Button>
-          <Button variant="danger">
+          <Button
+            variant="danger"
+            onClick={async () => {
+              const newAssignment = {
+                title: "New Assignment",
+                description: "",
+                points: 0,
+                due: "",
+                available: "",
+                availableUntil: "",
+                course: cid,
+              };
+
+              try {
+                const created = await client.createAssignment(newAssignment);
+                dispatch(setAssignments([...assignments, created]));
+                navigate(`/Kambaz/Courses/${cid}/Assignments/${created._id}`);
+              } catch (err) {
+                console.error("❌ Failed to create assignment:", err);
+              }
+            }}
+          >
             <FaPlus className="me-1" /> Assignment
           </Button>
         </Col>
@@ -76,48 +105,49 @@ export default function Assignments() {
       </Row>
 
       <ListGroup>
-        {assignments.length > 0 ? (
-          assignments.filter((a: any) => a.course === cid).map((assignment: any) => (
-            <ListGroup.Item
-              key={assignment._id}
-              className="d-flex align-items-center border border-dark border-1 bg-white text-dark position-relative"
-            >
-              <div className="position-absolute start-0 top-0 bottom-0 bg-success" style={{ width: "5px" }}></div>
+        {assignments.filter((a: any) => a.course?.trim() === cid?.trim()).length > 0 ? (
+          assignments
+            .filter((a: any) => a.course?.trim() === cid?.trim())
+            .map((assignment: any) => (
+              <ListGroup.Item
+                key={assignment._id}
+                className="d-flex align-items-center border border-dark border-1 bg-white text-dark position-relative"
+              >
+                <div className="position-absolute start-0 top-0 bottom-0 bg-success" style={{ width: "5px" }}></div>
 
-              <div className="flex-fill ps-3">
-                <a href={`#/Kambaz/Courses/${cid}/Assignments/${assignment._id}`} className="fw-bold text-dark">
-                  {assignment.name}
-                </a>
-                <div className="text-muted small">
-                  <span className="fw-bold text-danger">{assignment.module || "No Module Assigned"}</span> | 
-                  Not available until {assignment.availableFrom || "N/A"} <br />
-                  Due {assignment.dueDate || "N/A"} | {assignment.points || 0} points
+                <div className="flex-fill ps-3">
+                  <a href={`#/Kambaz/Courses/${cid}/Assignments/${assignment._id}`} className="fw-bold text-dark">
+                    {assignment.title}
+                  </a>
+                  <div className="text-muted small">
+                    <span className="fw-bold text-danger">{assignment.module || "No Module Assigned"}</span> | 
+                    Not available until {assignment.available ? new Date(assignment.available).toLocaleDateString() : "N/A"}<br />
+                    Due {assignment.due ? new Date(assignment.due).toLocaleDateString() : "N/A"} | {assignment.points || 0} points
+                  </div>
                 </div>
-              </div>
 
-              <FaTrash
-                className="text-danger fs-5 me-3"
-                style={{ cursor: "pointer" }}
-                onClick={() => confirmDelete(assignment)}
-              />
-              <FaCheckCircle className="text-success fs-5 me-3" />
-              <FaEllipsisV className="text-muted fs-5" />
-            </ListGroup.Item>
-          ))
+                <FaTrash
+                  className="text-danger fs-5 me-3"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => confirmDelete(assignment)}
+                />
+                <FaCheckCircle className="text-success fs-5 me-3" />
+                <FaEllipsisV className="text-muted fs-5" />
+              </ListGroup.Item>
+            ))
         ) : (
           <ListGroup.Item className="text-center text-muted">
-            No assignments available.
+            No assignments available for this course.
           </ListGroup.Item>
         )}
       </ListGroup>
 
-      {/* Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Delete Assignment</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete <strong>{selectedAssignment?.name}</strong>?
+          Are you sure you want to delete <strong>{selectedAssignment?.title}</strong>?
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>

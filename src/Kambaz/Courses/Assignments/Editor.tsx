@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "./reducer";
 import { v4 as uuidv4 } from "uuid";
-import * as client from "./client"; // ✅ Axios API client
+import * as client from "./client";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
@@ -16,36 +16,43 @@ export default function AssignmentEditor() {
   const [assignment, setAssignment] = useState<any>(
     existingAssignment || {
       _id: uuidv4(),
-      name: "",
+      title: "",
       description: "",
-      points: "",
-      dueDate: "",
-      availableFrom: "",
+      points: 0,
+      due: "",
+      available: "",
       availableUntil: "",
       course: cid,
     }
   );
 
   const handleSave = async () => {
-    if (!existingAssignment) {
-      const newAssignment = await client.createAssignment(assignment);
-      dispatch(addAssignment(newAssignment));
-    } else {
-      const updated = await client.updateAssignment(assignment);
-      dispatch(updateAssignment(updated));
+    try {
+      console.log("💾 Saving assignment:", assignment);
+
+      if (!existingAssignment) {
+        const newAssignment = await client.createAssignment(assignment);
+        dispatch(addAssignment(newAssignment));
+      } else {
+        const updated = await client.updateAssignment(assignment);
+        dispatch(updateAssignment(updated));
+      }
+
+      navigate(`/Kambaz/Courses/${cid}/Assignments`);
+    } catch (err) {
+      console.error("❌ Save failed:", err);
     }
-    navigate(`/Kambaz/Courses/${cid}/Assignments`);
   };
 
   return (
     <Container fluid className="p-4">
       <Form className="bg-white p-4 shadow-sm">
-        <Form.Group controlId="wd-name" className="mb-3">
-          <Form.Label className="fw-bold">Assignment Name</Form.Label>
+        <Form.Group controlId="wd-title" className="mb-3">
+          <Form.Label className="fw-bold">Assignment Title</Form.Label>
           <Form.Control
             type="text"
-            value={assignment.name}
-            onChange={(e) => setAssignment({ ...assignment, name: e.target.value })}
+            value={assignment.title}
+            onChange={(e) => setAssignment({ ...assignment, title: e.target.value })}
           />
         </Form.Group>
 
@@ -64,28 +71,28 @@ export default function AssignmentEditor() {
           <Form.Control
             type="number"
             value={assignment.points}
-            onChange={(e) => setAssignment({ ...assignment, points: e.target.value })}
+            onChange={(e) => setAssignment({ ...assignment, points: Number(e.target.value) })}
           />
         </Form.Group>
 
         <Row>
           <Col md={4}>
-            <Form.Group controlId="wd-due-date" className="mb-3">
+            <Form.Group controlId="wd-due" className="mb-3">
               <Form.Label className="fw-bold">Due Date</Form.Label>
               <Form.Control
                 type="date"
-                value={assignment.dueDate}
-                onChange={(e) => setAssignment({ ...assignment, dueDate: e.target.value })}
+                value={assignment.due}
+                onChange={(e) => setAssignment({ ...assignment, due: e.target.value })}
               />
             </Form.Group>
           </Col>
           <Col md={4}>
-            <Form.Group controlId="wd-available-from" className="mb-3">
+            <Form.Group controlId="wd-available" className="mb-3">
               <Form.Label className="fw-bold">Available From</Form.Label>
               <Form.Control
                 type="date"
-                value={assignment.availableFrom}
-                onChange={(e) => setAssignment({ ...assignment, availableFrom: e.target.value })}
+                value={assignment.available}
+                onChange={(e) => setAssignment({ ...assignment, available: e.target.value })}
               />
             </Form.Group>
           </Col>
